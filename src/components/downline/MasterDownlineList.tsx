@@ -1,18 +1,43 @@
-import {useState} from 'react';
-import {Link} from '@tanstack/react-router';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import React, {useState} from 'react';
+import {RotateCw, UserPlus, Search, PenSquare, Eye} from 'lucide-react';
 import GenericTable, {
   Column,
   Action,
   defaultActions,
 } from '../Forms/Table/GenericTable';
 import {motion, AnimatePresence} from 'framer-motion';
-import AddUser from '../user/AddUser';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import AddMaster from '../user/AddMaster';
 
-interface DownlineUser {
+interface MetricProps {
+  label: string;
+  value: string;
+  currency?: string;
+  isNegative?: boolean;
+}
+
+const Metric = ({
+  label,
+  value,
+  currency = 'CI',
+  isNegative = false,
+}: MetricProps) => (
+  <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
+    <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
+      {label}:
+    </span>
+    <span
+      className={`font-serif text-lg font-bold ${isNegative ? 'text-red-600' : 'text-brand-charcoal'}`}
+    >
+      {currency} {value}
+    </span>
+  </div>
+);
+
+interface MasterUser {
   id: string;
   username: string;
-  type: 'PL' | 'MA';
+  type: 'MA' | 'PL';
   creditRef: string;
   balance: string;
   exposure: string;
@@ -23,45 +48,43 @@ interface DownlineUser {
   status: 'active' | 'suspended' | 'closed';
 }
 
-const UserDownlineList = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const MasterDownlineList = () => {
   const [statusFilter, setStatusFilter] = useState('ACTIVE');
+  const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showAddMasterModal, setShowAddMasterModal] = useState(false);
 
-  // Sample data - replace with your actual API data
-  const [downlineData] = useState<DownlineUser[]>([
+  const [masterData, setMasterData] = useState<MasterUser[]>([
     {
       id: '1',
-      username: 'rbz5',
-      type: 'PL',
+      username: 'master1',
+      type: 'MA',
       creditRef: '0.00',
-      balance: '0.00',
-      exposure: '0.00',
-      availBal: '0.00',
-      refPL: '0.00',
-      rate: '1.000',
-      playerBal: '-',
+      balance: '5000.00',
+      exposure: '1000.00',
+      availBal: '4000.00',
+      refPL: '500.00',
+      rate: '1.500',
+      playerBal: '2500.00',
       status: 'active',
     },
     {
       id: '2',
-      username: 'v2345',
-      type: 'PL',
+      username: 'master2',
+      type: 'MA',
       creditRef: '0.00',
-      balance: '0.00',
-      exposure: '0.00',
-      availBal: '0.00',
-      refPL: '0.00',
-      rate: '7.000',
-      playerBal: '-',
+      balance: '3000.00',
+      exposure: '500.00',
+      availBal: '2500.00',
+      refPL: '300.00',
+      rate: '1.200',
+      playerBal: '1500.00',
       status: 'active',
     },
   ]);
 
-  // Define columns for Generic Table
-  const columns: Column<DownlineUser>[] = [
+  const columns: Column<MasterUser>[] = [
     {
       key: 'username',
       label: 'Username',
@@ -121,7 +144,7 @@ const UserDownlineList = () => {
       key: 'playerBal',
       label: 'Player Bal.',
       sortable: true,
-      render: (value) => <span className="text-gray-400">{value || '-'}</span>,
+      render: (value) => <span className="text-gray-400">{value}</span>,
     },
     {
       key: 'status',
@@ -144,8 +167,7 @@ const UserDownlineList = () => {
     },
   ];
 
-  // Define actions for the table
-  const actions: Action<DownlineUser>[] = [
+  const actions: Action<MasterUser>[] = [
     defaultActions.banking((row) => console.log('Banking', row.username)),
     defaultActions.transfer((row) => console.log('Transfer', row.username)),
     defaultActions.history((row) => console.log('History', row.username)),
@@ -159,29 +181,29 @@ const UserDownlineList = () => {
     console.log(`Sorting by ${field} in ${direction} order`);
   };
 
-  const filteredData = downlineData.filter((user) =>
+  const handleAddMasterSuccess = (newMaster: MasterUser) => {
+    // Add new master to the list
+    setMasterData((prev) => [...prev, newMaster]);
+    setShowAddMasterModal(false);
+    console.log('Master added successfully:', newMaster);
+  };
+
+  const filteredData = masterData.filter((user) =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Sort data
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortField) return 0;
-    const aVal = a[sortField as keyof DownlineUser];
-    const bVal = b[sortField as keyof DownlineUser];
+    const aVal = a[sortField as keyof MasterUser];
+    const bVal = b[sortField as keyof MasterUser];
     if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
 
-  const handleAddUserSuccess = () => {
-    setShowAddUserModal(false);
-    // Refresh user list logic here
-    console.log('User added successfully');
-  };
-
   return (
     <>
-      <main className="mx-auto flex w-full max-w-[1920px] flex-grow flex-col gap-6 p-4 md:p-6 lg:p-8">
+      <main className="mx-auto flex w-full max-w-[1920px] flex-grow flex-col gap-6 bg-[#F9FAFB] p-4 md:p-6 lg:p-8">
         {/* User Summary & Status */}
         <section className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
@@ -200,7 +222,7 @@ const UserDownlineList = () => {
               Status :
             </label>
             <select
-              className="form-select border-gray-300 rounded-md py-1.5 pl-3 pr-8 text-sm focus:border-brand-gold focus:ring-brand-gold"
+              className="form-select rounded-md border-stroke py-1.5 pl-3 pr-8 text-sm focus:border-brand-gold focus:ring-brand-gold"
               id="status-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -211,81 +233,39 @@ const UserDownlineList = () => {
             </select>
             <button
               aria-label="Refresh Status"
-              className="hover:bg-gray-200 border-gray-300 rounded-md border bg-brand-gray p-1.5 text-brand-text transition-colors"
-              onClick={() => {
-                console.log('Refreshing status...');
-              }}
+              className="hover:bg-gray-200 rounded-md border border-stroke bg-brand-gray p-1.5 text-brand-text transition-colors"
+              onClick={() => console.log('Refreshing status...')}
             >
               <i className="fa-solid fa-rotate-right"></i>
             </button>
+            {/* Add Master Button */}
             <button
-              onClick={() => setShowAddUserModal(true)}
+              onClick={() => setShowAddMasterModal(true)}
               className="hover:bg-gray-800 flex items-center gap-2 rounded-md bg-brand-charcoal px-4 py-1.5 text-sm font-semibold text-white transition-colors"
             >
-              <i className="fa-solid fa-user-plus"></i> Add User
+              <UserPlus size={16} />
+              <span>Add Master</span>
             </button>
           </div>
         </section>
 
         {/* Financial Cards Grid */}
         <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Total Balance:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI 0.00
-            </span>
-          </div>
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Total Exposure:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI ( <span className="text-red-600">0.00</span> )
-            </span>
-          </div>
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Avail. Balance:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI 1500.00
-            </span>
-          </div>
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Balance:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI 1500.00
-            </span>
-          </div>
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Total Avail. Balance:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI 0.00
-            </span>
-          </div>
-          <div className="flex flex-col justify-between rounded-custom border border-brand-border bg-white p-4 shadow-card">
-            <span className="mb-1 text-xs font-medium uppercase tracking-wider text-brand-text-muted">
-              Ref P/L:
-            </span>
-            <span className="font-serif text-lg font-bold text-brand-charcoal">
-              CI 1500.00
-            </span>
-          </div>
+          <Metric label="Total Balance" value="0.00" />
+          <Metric label="Total Exposure" value="( 0.00 )" isNegative={true} />
+          <Metric label="Avail. Balance" value="1500.00" />
+          <Metric label="Balance" value="1500.00" />
+          <Metric label="Total Avail. Balance" value="0.00" />
+          <Metric label="Ref P/L" value="1500.00" />
         </section>
 
-        {/* Downline List Section */}
+        {/* Master Downline List Section */}
         <section className="flex flex-col overflow-hidden rounded-custom border border-brand-border bg-white shadow-card">
           {/* Toolbar */}
           <div className="bg-gray-50/50 flex justify-end border-b border-brand-border p-4">
             <div className="flex w-full max-w-sm gap-2">
               <input
-                className="form-input border-gray-300 placeholder-gray-400 w-full rounded-md text-sm focus:border-brand-gold focus:ring-brand-gold"
+                className="form-input placeholder-gray-400 w-full rounded-md border-stroke text-sm focus:border-brand-gold focus:ring-brand-gold"
                 placeholder="Search for..."
                 type="text"
                 value={searchTerm}
@@ -305,21 +285,21 @@ const UserDownlineList = () => {
             onSort={handleSort}
             initialSortField={sortField}
             initialSortDirection={sortDirection}
-            emptyMessage="No downline users found"
+            emptyMessage="No master data to display"
             onRowClick={(row) => console.log('Row clicked:', row.username)}
           />
         </section>
       </main>
 
-      {/* Add User Modal */}
+      {/* Add Master Modal */}
       <AnimatePresence>
-        {showAddUserModal && (
+        {showAddMasterModal && (
           <motion.div
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-            onClick={() => setShowAddUserModal(false)}
+            onClick={() => setShowAddMasterModal(false)}
           >
             <motion.div
               initial={{scale: 0.9, opacity: 0}}
@@ -327,11 +307,11 @@ const UserDownlineList = () => {
               exit={{scale: 0.9, opacity: 0}}
               transition={{type: 'spring', damping: 25, stiffness: 300}}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[600px]"
+              className="w-full max-w-[700px]"
             >
-              <AddUser
-                onClose={() => setShowAddUserModal(false)}
-                onSuccess={handleAddUserSuccess}
+              <AddMaster
+                onClose={() => setShowAddMasterModal(false)}
+                onSuccess={handleAddMasterSuccess}
               />
             </motion.div>
           </motion.div>
@@ -341,4 +321,4 @@ const UserDownlineList = () => {
   );
 };
 
-export default UserDownlineList;
+export default MasterDownlineList;

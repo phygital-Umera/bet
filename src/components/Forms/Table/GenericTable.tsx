@@ -1,253 +1,223 @@
-import React, {useState} from 'react';
-import {FiEdit} from 'react-icons/fi';
-import {GrFormNext, GrFormPrevious} from 'react-icons/gr';
-import {MdDelete} from 'react-icons/md';
+import React from 'react';
+import {
+  ChevronsUpDown,
+  DollarSign,
+  ArrowRightLeft,
+  Clock,
+  Settings,
+  User,
+  PenSquare,
+  Eye,
+} from 'lucide-react';
 
-type Button<T> = {
+export interface Column<T = any> {
   label: string;
-  onClick: (item: T) => void;
-  className?: string;
-  icon?: React.ReactNode;
-};
-
-export type Column<T> = {
-  header: string;
-  accessor: keyof T | ((item: T) => React.ReactNode);
-  render?: (item: T) => React.ReactNode;
-  className?: string;
-  buttons?: Button<T>[];
+  key: string;
   sortable?: boolean;
-  action?: boolean;
-  onEdit?: (item: T) => void;
-  onDelete?: (item: T) => void;
-};
+  render?: (value: any, row: T, index: number) => React.ReactNode;
+  className?: string;
+  width?: string;
+}
 
-type GenericTableProps<T> = {
+export interface Action<T = any> {
+  icon: React.ReactNode;
+  title: string;
+  onClick: (row: T, index: number) => void;
+  show?: (row: T, index: number) => boolean;
+}
+
+interface GenericTableProps<T = any> {
   data: T[];
   columns: Column<T>[];
-  itemsPerPage?: number;
-  searchAble?: boolean;
-  title?: string;
-  action?: boolean;
-  onEdit?: (item: T) => void;
-  onDelete?: (item: T) => void;
-  paginationOff?: boolean;
-};
+  actions?: Action<T>[];
+  onSort?: (field: string, direction: 'asc' | 'desc') => void;
+  initialSortField?: string;
+  initialSortDirection?: 'asc' | 'desc';
+  emptyMessage?: string;
+  onRowClick?: (row: T, index: number) => void;
+  keyExtractor?: (row: T, index: number) => string | number;
+}
 
-const GenericTable = <T,>({
+function GenericTable<T extends Record<string, any>>({
   data,
   columns,
-  itemsPerPage = 5,
-  searchAble,
-  action,
-  title,
-  onEdit: handleEdit,
-  onDelete: handleDelete,
-  paginationOff = false,
-}: GenericTableProps<T>) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof T;
-    direction: 'asc' | 'desc';
-  } | null>(null);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const sortedData = React.useMemo(() => {
-    const sortableData = [...data];
-    if (sortConfig !== null) {
-      sortableData.sort((a, b) => {
-        const aValue =
-          typeof sortConfig.key === 'function'
-            ? (sortConfig.key as (a: T) => string | number | boolean)(a)
-            : a[sortConfig.key];
-        const bValue =
-          typeof sortConfig.key === 'function'
-            ? (sortConfig.key as (a: T) => string | number | boolean)(b)
-            : b[sortConfig.key];
-
-        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-    return sortableData;
-  }, [data, sortConfig]);
-
-  const handleSort = (key: keyof T) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'asc'
-    ) {
-      direction = 'desc';
-    }
-    setSortConfig({key, direction});
-  };
-
-  const filteredData = sortedData.filter((item) =>
-    columns.some((column) => {
-      const value =
-        typeof column.accessor === 'function'
-          ? column.accessor(item)
-          : item[column.accessor];
-      return value
-        ?.toString()
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    }),
+  actions = [],
+  onSort,
+  initialSortField = '',
+  initialSortDirection = 'asc',
+  emptyMessage = 'No data to display',
+  onRowClick,
+  keyExtractor,
+}: GenericTableProps<T>) {
+  const [sortField, setSortField] = React.useState(initialSortField);
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>(
+    initialSortDirection,
   );
 
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
+  const handleSort = (field: string) => {
+    if (!onSort) return;
 
-  const paginatedData = paginationOff
-    ? filteredData
-    : filteredData.slice(startIdx, startIdx + itemsPerPage);
+    let newDirection: 'asc' | 'desc' = 'asc';
+    if (sortField === field) {
+      newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+
+    setSortField(field);
+    setSortDirection(newDirection);
+    onSort(field, newDirection);
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) {
+      return <i className="fa-solid fa-sort sort-icon text-gray-400 text-xs ml-1"></i>;
+    }
+    return sortDirection === 'asc' 
+      ? <i className="fa-solid fa-sort-up sort-icon text-gray-600 text-xs ml-1"></i>
+      : <i className="fa-solid fa-sort-down sort-icon text-gray-600 text-xs ml-1"></i>;
+  };
+
+  const getKey = (row: T, index: number) => {
+    if (keyExtractor) {
+      return keyExtractor(row, index);
+    }
+    return row.id || row.key || index;
+  };
+
+  const renderCellValue = (column: Column<T>, row: T, index: number) => {
+    const value = row[column.key];
+    if (column.render) {
+      return column.render(value, row, index);
+    }
+
+    if (value === undefined || value === null) {
+      return <span className="text-gray-400">-</span>;
+    }
+
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
+    }
+
+    return value;
+  };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white px-4 pb-2 pt-4 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-6">
-      {title && <h2 className="mb-3 text-lg font-semibold">{title}</h2>}
-      {searchAble && (
-        <div className="mb-3 flex justify-between">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-1.5 text-sm outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-          />
-        </div>
-      )}
-      <div className="max-w-full overflow-x-auto">
-        <table className="w-full table-auto">
-          <thead>
-            <tr className="bg-gray-2 text-left dark:bg-meta-4">
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={`min-w-[120px] px-3 py-2.5 font-medium text-black dark:text-white ${column.className || ''}`}
-                  onClick={
-                    column.sortable
-                      ? () => handleSort(column.accessor as keyof T)
-                      : undefined
-                  }
-                  style={{cursor: column.sortable ? 'pointer' : 'default'}}
-                >
-                  <div className="text-sm">
-                    {column.header}{' '}
-                    {sortConfig?.key === column.accessor
-                      ? sortConfig.direction === 'asc'
-                        ? '↑'
-                        : '↓'
-                      : null}
-                  </div>
-                </th>
-              ))}
-              {action && (
-                <th className="min-w-[100px] px-3 py-2.5">
-                  <div className="text-sm">Action</div>
-                </th>
-              )}
+    <div className="overflow-x-auto table-container">
+      <table className="w-full text-left text-sm whitespace-nowrap">
+        <thead className="bg-brand-gray text-brand-text font-semibold border-b border-brand-border">
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                className={`px-4 py-3 cursor-pointer hover:bg-gray-200 transition-colors ${column.className || ''}`}
+                style={{ width: column.width }}
+                onClick={() => column.sortable !== false && onSort && handleSort(column.key)}
+              >
+                <span className="flex items-center gap-1">
+                  {column.label}
+                  {column.sortable !== false && onSort && getSortIcon(column.key)}
+                </span>
+              </th>
+            ))}
+            {actions.length > 0 && (
+              <th className="px-4 py-3" scope="col">
+                Action
+              </th>
+            )}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-brand-border">
+          {data.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length + (actions.length > 0 ? 1 : 0)}
+                className="px-4 py-12 text-center text-gray-500 font-medium bg-white"
+              >
+                {emptyMessage}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((item, rowIndex) => (
-              <tr key={rowIndex} className="text-sm">
-                {columns.map((column, colIndex) => {
-                  const value =
-                    typeof column.accessor === 'function'
-                      ? column.accessor(item)
-                      : item[column.accessor];
-
-                  return (
-                    <td
-                      key={colIndex}
-                      className="border-b border-[#eee] px-3 py-2 dark:border-strokedark"
-                    >
-                      <div className="py-1.5">
-                        {column.render
-                          ? column.render(item)
-                          : typeof value === 'string'
-                            ? value
-                            : JSON.stringify(value)}
-                        {column.buttons && (
-                          <div className="mt-1.5 space-x-2">
-                            {column.buttons.map((button, btnIndex) => (
-                              <button
-                                key={btnIndex}
-                                onClick={() => button.onClick(item)}
-                                className={`rounded px-2 py-1 text-xs ${button.className || ''}`}
-                              >
-                                {button.icon || button.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  );
-                })}
-                {action && (
-                  <td className="border-b border-[#eee] px-3 py-2 dark:border-strokedark">
-                    <div className="flex items-center space-x-2 py-1.5 sm:block sm:space-x-0 sm:space-y-2">
-                      {handleEdit && (
-                        <button
-                          className="hover:bg-gray-100 rounded p-1.5 dark:hover:bg-meta-4"
-                          onClick={() => handleEdit(item)}
-                        >
-                          <FiEdit className="h-4 w-4" />
-                        </button>
-                      )}
-                      {handleDelete && (
-                        <button
-                          className="hover:bg-gray-100 rounded p-1.5 dark:hover:bg-meta-4"
-                          onClick={() => handleDelete(item)}
-                        >
-                          <MdDelete className="h-4 w-4" />
-                        </button>
+          ) : (
+            data.map((row, index) => (
+              <tr
+                key={getKey(row, index)}
+                className={`hover:bg-gray-50 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                onClick={() => onRowClick && onRowClick(row, index)}
+              >
+                {columns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={`px-4 py-3 ${column.className || ''}`}
+                  >
+                    {renderCellValue(column, row, index)}
+                  </td>
+                ))}
+                {actions.length > 0 && (
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1">
+                      {actions.map(
+                        (action, actionIndex) =>
+                          (action.show ? action.show(row, index) : true) && (
+                            <button
+                              key={actionIndex}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                action.onClick(row, index);
+                              }}
+                              className="action-btn w-7 h-7 inline-flex items-center justify-center border border-stroke rounded-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                              title={action.title}
+                            >
+                              {action.icon}
+                            </button>
+                          ),
                       )}
                     </div>
                   </td>
                 )}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Controls */}
-      {!paginationOff && (
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-sm">
-            Page {currentPage} of {totalPages}
-          </span>
-          <div className="space-x-2">
-            <button
-              className="hover:bg-gray-100 rounded p-1.5 dark:hover:bg-meta-4"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              <GrFormPrevious className="h-4 w-4" />
-            </button>
-            <button
-              className="hover:bg-gray-100 rounded p-1.5 dark:hover:bg-meta-4"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              <GrFormNext className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
+}
+
+// Pre-defined action icons for common operations
+export const defaultActions = {
+  banking: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-solid fa-dollar-sign text-gray-600 text-sm"></i>,
+    title: 'Banking',
+    onClick,
+  }),
+  transfer: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-solid fa-arrow-right-arrow-left text-gray-600 text-sm"></i>,
+    title: 'Transfer',
+    onClick,
+  }),
+  history: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-solid fa-clock-rotate-left text-gray-600 text-sm"></i>,
+    title: 'History',
+    onClick,
+  }),
+  settings: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-solid fa-gear text-gray-600 text-sm"></i>,
+    title: 'Settings',
+    onClick,
+  }),
+  profile: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-solid fa-user text-gray-600 text-sm"></i>,
+    title: 'Profile',
+    onClick,
+  }),
+  edit: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-regular fa-pen-to-square text-gray-600 text-sm"></i>,
+    title: 'Edit',
+    onClick,
+  }),
+  view: (onClick: (row: any, index: number) => void): Action => ({
+    icon: <i className="fa-regular fa-eye text-gray-600 text-sm"></i>,
+    title: 'View',
+    onClick,
+  }),
 };
 
 export default GenericTable;

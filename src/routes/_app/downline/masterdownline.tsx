@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import {createFileRoute} from '@tanstack/react-router';
+import MasterDownlineList from '../../../components/downline/MasterDownlineList';
 
 export const Route = createFileRoute('/_app/downline/masterdownline')({
-  component: () => <div>Hello /_app/downline/masterdownline!</div>
-})
+  component: MasterDownlineList,
+});

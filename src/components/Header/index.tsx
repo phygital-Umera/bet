@@ -56,14 +56,14 @@ const Header = () => {
               {openDropdown === 'downline' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
                   <button
-                    onClick={() => navigate({ to: '/downline/userdownlinelist' })}
+                    onClick={() => navigate({to: '/downline/userdownlinelist'})}
                     className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-users mr-2 text-brand-gold"></i>
                     User Downline List
                   </button>
                   <button
-                    onClick={() => navigate({ to: '/downline/masterdownline' })}
+                    onClick={() => navigate({to: '/downline/masterdownline'})}
                     className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-crown mr-2 text-brand-gold"></i>
@@ -75,7 +75,7 @@ const Header = () => {
 
             <li className="h-full">
               <Link
-                to="/my-account"
+                to="/account"
                 className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
               >
                 My Account
@@ -113,7 +113,7 @@ const Header = () => {
 
             <li className="h-full">
               <Link
-                to="/bet-list"
+                to="/betlist"
                 className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
               >
                 Bet List
@@ -122,7 +122,7 @@ const Header = () => {
 
             <li className="h-full">
               <Link
-                to="/bet-list-live"
+                to="/betlive"
                 className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
               >
                 Bet List Live
@@ -131,7 +131,7 @@ const Header = () => {
 
             <li className="h-full">
               <Link
-                to="/market-analysis"
+                to="/marketanalysis"
                 className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
               >
                 Market Analysis
