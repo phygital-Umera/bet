@@ -94,14 +94,14 @@ const Header = () => {
               {openDropdown === 'report' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-64 rounded-b-custom border border-brand-border bg-white shadow-lg">
                   <button
-                    onClick={() => navigate('/report/event-profit-loss')}
+                    onClick={() => navigate({ to: '/report/eventprofitloss' })}
                     className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-chart-line mr-2 text-brand-gold"></i>
                     Event Profit/Loss
                   </button>
                   <button
-                    onClick={() => navigate('/report/downline-profit-loss')}
+                    onClick={() => navigate({ to: '/report/downlinereport' })}
                     className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-diagram-project mr-2 text-brand-gold"></i>
@@ -158,14 +158,14 @@ const Header = () => {
               {openDropdown === 'games' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
                   <button
-                    onClick={() => navigate('/games/player-battle')}
+                    onClick={() => navigate({ to: '/report/playerbattle' })}
                     className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-gamepad mr-2 text-brand-gold"></i>
                     Player Battle
                   </button>
                   <button
-                    onClick={() => navigate('/games/roulette')}
+                    onClick={() => navigate({ to: '/games/roulette' })}
                     className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-circle-notch mr-2 text-brand-gold"></i>
