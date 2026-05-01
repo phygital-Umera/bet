@@ -1,7 +1,8 @@
-import {Link} from '@tanstack/react-router';
+import {Link, useNavigate} from '@tanstack/react-router';
 import {useState} from 'react';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (name: string) => {
@@ -54,20 +55,20 @@ const Header = () => {
               </button>
               {openDropdown === 'downline' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
-                  <Link
-                    to="/downline/user-downline"
-                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  <button
+                    onClick={() => navigate({ to: '/downline/userdownlinelist' })}
+                    className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-users mr-2 text-brand-gold"></i>
                     User Downline List
-                  </Link>
-                  <Link
-                    to="/downline/master-downline"
-                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  </button>
+                  <button
+                    onClick={() => navigate({ to: '/downline/masterdownline' })}
+                    className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-crown mr-2 text-brand-gold"></i>
                     Master Downline List
-                  </Link>
+                  </button>
                 </div>
               )}
             </li>
@@ -92,20 +93,20 @@ const Header = () => {
               </button>
               {openDropdown === 'report' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-64 rounded-b-custom border border-brand-border bg-white shadow-lg">
-                  <Link
-                    to="/report/event-profit-loss"
-                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  <button
+                    onClick={() => navigate('/report/event-profit-loss')}
+                    className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-chart-line mr-2 text-brand-gold"></i>
                     Event Profit/Loss
-                  </Link>
-                  <Link
-                    to="/report/downline-profit-loss"
-                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  </button>
+                  <button
+                    onClick={() => navigate('/report/downline-profit-loss')}
+                    className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-diagram-project mr-2 text-brand-gold"></i>
                     Downline Profit/Loss
-                  </Link>
+                  </button>
                 </div>
               )}
             </li>
@@ -156,20 +157,20 @@ const Header = () => {
               </button>
               {openDropdown === 'games' && (
                 <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
-                  <Link
-                    to="/games/player-battle"
-                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  <button
+                    onClick={() => navigate('/games/player-battle')}
+                    className="block w-full px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-gamepad mr-2 text-brand-gold"></i>
                     Player Battle
-                  </Link>
-                  <Link
-                    to="/games/roulette"
-                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  </button>
+                  <button
+                    onClick={() => navigate('/games/roulette')}
+                    className="block w-full border-t border-brand-border px-4 py-2 text-left text-sm text-brand-text transition-colors hover:bg-brand-gray"
                   >
                     <i className="fa-solid fa-circle-notch mr-2 text-brand-gold"></i>
                     Roulette
-                  </Link>
+                  </button>
                 </div>
               )}
             </li>
