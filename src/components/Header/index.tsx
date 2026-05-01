@@ -1,78 +1,191 @@
 import {Link} from '@tanstack/react-router';
-import DropdownMessage from './DropdownMessage';
-import DropdownNotification from './DropdownNotification';
-import DropdownUser from './DropdownUser';
-import LogoIcon from '../../assets/images/logo/logo-icon.svg';
-import DarkModeSwitcher from './DarkModeSwitcher';
+import {useState} from 'react';
 
-import {FiMenu, FiX} from 'react-icons/fi';
-import {LuSearch} from 'react-icons/lu';
+const Header = () => {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-const Header = (props: {
-  sidebarOpen: string | boolean | undefined;
-  setSidebarOpen: (arg0: boolean) => void;
-}) => {
+  const toggleDropdown = (name: string) => {
+    setOpenDropdown(openDropdown === name ? null : name);
+  };
+
   return (
-    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
-
-          <button
-            aria-controls="sidebar"
-            onClick={(e) => {
-              e.stopPropagation();
-              props.setSidebarOpen(!props.sidebarOpen);
-            }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
-          >
-            <span className="relative block h-5.5 w-5.5 cursor-pointer">
-              {props.sidebarOpen ? (
-                <FiX className="h-full w-full text-black dark:text-white" />
-              ) : (
-                <FiMenu className="h-full w-full text-black dark:text-white" />
-              )}
+    <>
+      {/* BEGIN: MainHeader */}
+      <header className="bg-brand-charcoal text-white shadow-md">
+        <div className="mx-auto flex h-16 max-w-[1920px] items-center justify-between px-4">
+          {/* Logo Area */}
+          <Link to="/" className="flex items-center gap-2">
+            <i className="fa-solid fa-bolt text-2xl text-brand-gold"></i>
+            <span className="font-serif text-2xl font-bold tracking-tight">
+              fairexch<sup className="text-xs">®</sup>
             </span>
-          </button>
+          </Link>
 
-          {/* <!-- Hamburger Toggle BTN --> */}
-
-          {/* <Link className="block flex-shrink-0 lg:hidden" to="/">
-            <img src={LogoIcon} alt="Logo" />
-          </Link> */}
-        </div>
-
-        <div className="hidden sm:block">
-          <form action="https://formbold.com/s/unique_form_id" method="POST">
-            <div className="relative">
-              {/* <button className="absolute left-0 top-1/2 -translate-y-1/2">
-                <LuSearch
-                  className="hover:fill-primary dark:hover:fill-primary"
-                  size={22}
-                />
-              </button>
-              <input
-                type="text"
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
-              /> */}
+          {/* User Quick Info */}
+          <div className="flex items-center gap-6 text-sm font-medium">
+            <div className="flex items-center gap-4">
+              <span>vik11000</span>
+              <span className="text-brand-gold">CI:1500.00</span>
             </div>
-          </form>
+            <button
+              aria-label="Refresh"
+              className="hover:bg-gray-600 rounded-custom bg-brand-gray-dark p-2 text-white transition-colors"
+            >
+              <i className="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
         </div>
+      </header>
+      {/* END: MainHeader */}
 
-        <div className="flex items-center gap-3 2xsm:gap-7">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            <DarkModeSwitcher />
+      {/* BEGIN: Secondary Navigation */}
+      <nav className="sticky top-0 z-10 border-b border-yellow-600 bg-brand-gold shadow-sm">
+        <div className="mx-auto flex h-12 max-w-[1920px] items-center justify-between px-4">
+          {/* Navigation Links */}
+          <ul className="flex h-full items-center space-x-1 text-sm font-semibold text-brand-charcoal">
+            {/* Downline List Dropdown */}
+            <li className="relative h-full">
+              <button
+                onClick={() => toggleDropdown('downline')}
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Downline List{' '}
+                <i className="fa-solid fa-caret-down ml-1 text-xs"></i>
+              </button>
+              {openDropdown === 'downline' && (
+                <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
+                  <Link
+                    to="/downline/user-downline"
+                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-users mr-2 text-brand-gold"></i>
+                    User Downline List
+                  </Link>
+                  <Link
+                    to="/downline/master-downline"
+                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-crown mr-2 text-brand-gold"></i>
+                    Master Downline List
+                  </Link>
+                </div>
+              )}
+            </li>
 
-            <DropdownNotification />
+            <li className="h-full">
+              <Link
+                to="/my-account"
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                My Account
+              </Link>
+            </li>
 
-            {/* <DropdownMessage /> */}
+            {/* My Report Dropdown */}
+            <li className="relative h-full">
+              <button
+                onClick={() => toggleDropdown('report')}
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                My Report{' '}
+                <i className="fa-solid fa-caret-down ml-1 text-xs"></i>
+              </button>
+              {openDropdown === 'report' && (
+                <div className="absolute left-0 top-full z-20 mt-0 w-64 rounded-b-custom border border-brand-border bg-white shadow-lg">
+                  <Link
+                    to="/report/event-profit-loss"
+                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-chart-line mr-2 text-brand-gold"></i>
+                    Event Profit/Loss
+                  </Link>
+                  <Link
+                    to="/report/downline-profit-loss"
+                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-diagram-project mr-2 text-brand-gold"></i>
+                    Downline Profit/Loss
+                  </Link>
+                </div>
+              )}
+            </li>
+
+            <li className="h-full">
+              <Link
+                to="/bet-list"
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Bet List
+              </Link>
+            </li>
+
+            <li className="h-full">
+              <Link
+                to="/bet-list-live"
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Bet List Live
+              </Link>
+            </li>
+
+            <li className="h-full">
+              <Link
+                to="/market-analysis"
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Market Analysis
+              </Link>
+            </li>
+
+            <li className="h-full">
+              <Link
+                to="/banking"
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Banking
+              </Link>
+            </li>
+
+            {/* Games Dropdown */}
+            <li className="relative h-full">
+              <button
+                onClick={() => toggleDropdown('games')}
+                className="flex h-full items-center border-b-2 border-transparent px-4 transition-colors hover:border-black hover:bg-black/10"
+              >
+                Games <i className="fa-solid fa-caret-down ml-1 text-xs"></i>
+              </button>
+              {openDropdown === 'games' && (
+                <div className="absolute left-0 top-full z-20 mt-0 w-56 rounded-b-custom border border-brand-border bg-white shadow-lg">
+                  <Link
+                    to="/games/player-battle"
+                    className="block px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-gamepad mr-2 text-brand-gold"></i>
+                    Player Battle
+                  </Link>
+                  <Link
+                    to="/games/roulette"
+                    className="block border-t border-brand-border px-4 py-2 text-sm text-brand-text transition-colors hover:bg-brand-gray"
+                  >
+                    <i className="fa-solid fa-circle-notch mr-2 text-brand-gold"></i>
+                    Roulette
+                  </Link>
+                </div>
+              )}
+            </li>
           </ul>
 
-          <DropdownUser />
+          {/* Logout */}
+          <Link
+            to="/logout"
+            className="flex items-center rounded-custom px-4 py-1.5 text-sm font-semibold text-brand-charcoal transition-colors hover:bg-black/10"
+          >
+            Logout <i className="fa-solid fa-arrow-right-from-bracket ml-2"></i>
+          </Link>
         </div>
-      </div>
-    </header>
+      </nav>
+      {/* END: Secondary Navigation */}
+    </>
   );
 };
 

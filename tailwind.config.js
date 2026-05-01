@@ -1,4 +1,4 @@
-import {screens as _screens} from 'tailwindcss/defaultTheme';
+import { screens as _screens } from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
 export const content = ['./index.html', './src/**/*.{js,ts,jsx,tsx}'];
@@ -15,6 +15,9 @@ export const theme = {
     robotoSlab: ['"Roboto Slab"', 'serif'],
     croissant: ['"Croissant One"', 'sans-serif'],
     lora: ['"Lora"', 'serif'],
+    // Add Inter and Noto Serif for the betting dashboard
+    sans: ['Inter', 'sans-serif'],
+    serif: ['Noto Serif', 'serif'],
   },
   screens: {
     '2xsm': '375px',
@@ -59,6 +62,18 @@ export const theme = {
       success: '#219653',
       danger: '#D34053',
       warning: '#FFA70B',
+      // ========== BRAND COLORS FROM HTML DESIGN ==========
+      brand: {
+        charcoal: '#1A1C20',
+        gold: '#B8860B',
+        'gold-hover': '#DAA520',
+        gray: '#F3F4F6',
+        'gray-dark': '#374151',
+        border: '#E5E7EB',
+        text: '#1F2937',
+        'text-muted': '#6B7280',
+      },
+      // ==================================================
     },
     fontSize: {
       'title-xxl': ['44px', '55px'],
@@ -219,9 +234,12 @@ export const theme = {
     content: {
       'icon-copy': 'url("../assets/images/icon/icon-copy-alt.svg")',
     },
-    transitionProperty: {width: 'width', stroke: 'stroke'},
+    transitionProperty: { width: 'width', stroke: 'stroke' },
     borderWidth: {
       6: '6px',
+    },
+    borderRadius: {
+      custom: '8px', // Add custom border radius
     },
     boxShadow: {
       default: '0px 8px 13px -3px rgba(0, 0, 0, 0.07)',
@@ -245,8 +263,8 @@ export const theme = {
     },
     keyframes: {
       rotating: {
-        '0%, 100%': {transform: 'rotate(360deg)'},
-        '50%': {transform: 'rotate(0deg)'},
+        '0%, 100%': { transform: 'rotate(360deg)' },
+        '50%': { transform: 'rotate(0deg)' },
       },
     },
     animation: {
