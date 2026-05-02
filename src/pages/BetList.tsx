@@ -1,8 +1,46 @@
-import React from 'react';
-import {ChevronDown, Calendar, Search, ArrowUpDown} from 'lucide-react';
-import {motion} from 'framer-motion';
+import React, { useState } from 'react';
+import { ChevronDown, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
+import BetGenericTable, { BetColumn } from '@/components/Forms/Table/BetGenericTable';
+
+interface BetListRow {
+  sn: string;
+  plId: string;
+  dollar: string;
+  parent: string;
+  betId: string;
+  ipAddress: string;
+  sports: string;
+  market: string;
+  event: string;
+  selection: string;
+  type: string;
+  oddReq: string;
+  betTaken: string;
+  s: string;
+}
 
 const BetList: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const data: BetListRow[] = []; // API data later
+
+  const columns: BetColumn<BetListRow>[] = [
+    { key: 'sn', label: 'SN', sortable: true },
+    { key: 'plId', label: 'PL ID', sortable: true },
+    { key: 'dollar', label: '$', sortable: true },
+    { key: 'parent', label: 'Parent', sortable: true },
+    { key: 'betId', label: 'Bet ID', sortable: true },
+    { key: 'ipAddress', label: 'IP Address', sortable: true },
+    { key: 'sports', label: 'Sports', sortable: true },
+    { key: 'market', label: 'Market', sortable: true },
+    { key: 'event', label: 'Event', sortable: true },
+    { key: 'selection', label: 'Selection', sortable: false },
+    { key: 'type', label: 'Type', sortable: true },
+    { key: 'oddReq', label: 'Odd req', sortable: false },
+    { key: 'betTaken', label: 'Bet Taken', sortable: true },
+    { key: 's', label: 'S', sortable: true },
+  ];
+
   return (
     <div className="min-h-screen bg-[#e8e4d9] p-4 font-sans text-[#212529] lg:p-6">
       <div className="space-y-4">
@@ -11,9 +49,7 @@ const BetList: React.FC = () => {
           <div className="grid grid-cols-1 items-end gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             {/* Game Type */}
             <div className="space-y-1.5">
-              <label className="text-gray-700 text-[13px] font-medium">
-                Game Type
-              </label>
+              <label className="text-gray-700 text-[13px] font-medium">Game Type</label>
               <div className="relative">
                 <select className="h-[38px] w-full appearance-none rounded border border-[#ced4da] bg-white px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none">
                   <option>SPORTS</option>
@@ -24,9 +60,7 @@ const BetList: React.FC = () => {
 
             {/* Sports */}
             <div className="space-y-1.5">
-              <label className="text-gray-700 text-[13px] font-medium">
-                Sports
-              </label>
+              <label className="text-gray-700 text-[13px] font-medium">Sports</label>
               <div className="relative">
                 <select className="h-[38px] w-full appearance-none rounded border border-[#ced4da] bg-white px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none">
                   <option>Select</option>
@@ -37,9 +71,7 @@ const BetList: React.FC = () => {
 
             {/* Bet Status */}
             <div className="space-y-1.5">
-              <label className="text-gray-700 text-[13px] font-medium">
-                Bet Status
-              </label>
+              <label className="text-gray-700 text-[13px] font-medium">Bet Status</label>
               <div className="relative">
                 <select className="h-[38px] w-full appearance-none rounded border border-[#ced4da] bg-white px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none">
                   <option>All</option>
@@ -52,9 +84,7 @@ const BetList: React.FC = () => {
 
             {/* Stake */}
             <div className="space-y-1.5">
-              <label className="text-gray-700 text-[13px] font-medium">
-                Stake
-              </label>
+              <label className="text-gray-700 text-[13px] font-medium">Stake</label>
               <div className="relative">
                 <select className="h-[38px] w-full appearance-none rounded border border-[#ced4da] bg-white px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none">
                   <option>&gt;0</option>
@@ -65,9 +95,7 @@ const BetList: React.FC = () => {
 
             {/* Date */}
             <div className="space-y-1.5">
-              <label className="text-gray-700 text-[13px] font-medium">
-                Date
-              </label>
+              <label className="text-gray-700 text-[13px] font-medium">Date</label>
               <div className="flex h-[38px]">
                 <input
                   type="text"
@@ -83,7 +111,7 @@ const BetList: React.FC = () => {
             {/* Get History Button */}
             <div>
               <motion.button
-                whileHover={{brightness: 1.1}}
+                whileHover={{ brightness: 1.1 }}
                 className="h-[38px] w-full rounded border border-[#eeb902] bg-[#f9d423] px-6 text-sm font-bold text-black shadow-[0_2px_4px_rgba(0,0,0,0.1)] transition-all hover:bg-[#ffdf40]"
               >
                 Get History
@@ -94,71 +122,31 @@ const BetList: React.FC = () => {
 
         {/* Table Section */}
         <div className="border-stroke flex h-[600px] flex-col rounded border bg-white shadow-sm">
-          {/* Main Title Bar */}
           <div className="bg-[#2a3a4a] px-4 py-2 text-sm font-bold tracking-wide text-white">
             Bet List
           </div>
 
-          {/* Search Bar Container */}
           <div className="flex justify-end bg-white p-3">
-            <div className="relative w-full max-w-[200px]">
-              <input
-                type="text"
-                placeholder="Search"
-                className="border-stroke w-full rounded border bg-[#f1f3f5] px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-[200px] rounded border border-[#ced4da] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+            />
           </div>
 
-          {/* Table Container */}
-          <div className="flex-1 overflow-auto">
-            <table className="w-full min-w-[1200px] border-collapse text-left text-[12px]">
-              <thead className="border-stroke sticky top-0 border-b bg-[#f1f3f5] font-bold text-[#495057]">
-                <tr>
-                  {[
-                    'SN',
-                    'PL ID',
-                    '$',
-                    'Parent',
-                    'Bet ID',
-                    'IP Address',
-                    'Sports',
-                    'Market',
-                    'Event',
-                    'Selection',
-                    'Type',
-                    'Odd req',
-                    'Bet Taken',
-                    'S',
-                  ].map((header) => (
-                    <th
-                      key={header}
-                      className="border-stroke whitespace-nowrap border-r px-3 py-2.5 last:border-r-0"
-                    >
-                      <div className="flex cursor-pointer items-center gap-1">
-                        {header}
-                        <ArrowUpDown className="text-gray-400 ml-auto h-3 w-3" />
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td
-                    colSpan={14}
-                    className="text-gray-700 bg-white py-32 text-center text-[15px] font-bold"
-                  >
-                    No data to display
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          {/* ONLY THE TABLE - imported from BetGenericTable */}
+          <BetGenericTable
+            data={data}
+            columns={columns}
+            emptyMessage="No data to display"
+            
+          />
         </div>
       </div>
 
-      {/* Floating Action Button (mocking the bottom right yellow icon) */}
+      {/* Floating Button */}
       <div className="fixed bottom-6 right-6">
         <button className="group rounded-lg bg-[#f9d423] p-3 shadow-xl transition-all hover:bg-[#eeb902]">
           <div className="grid grid-cols-3 gap-1">

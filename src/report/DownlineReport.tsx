@@ -1,109 +1,98 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import React, { useState } from 'react';
+import { LayoutGrid } from 'lucide-react';
+import { motion } from 'framer-motion';
+import ReportGenericTable, {
+  ReportColumn,
+} from '@/components/Forms/Table/ReportGenericTable';
+import DownlineReportFilter from './DownlineReportFilter';
 
-import { Calendar, ChevronDown, ChevronsUpDown } from 'lucide-react';
+interface ReportRow {
+  sn: string;
+  showDetail: string;
+  uid: string;
+  viewBets: string;
+  stake: string;
+  playerPL: string;
+  uplinePL: string;
+  moComm: string;
+  bmComm: string;
+}
 
 export function DownlineReport() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const data: ReportRow[] = []; // API data later
+
+  const columns: ReportColumn<ReportRow>[] = [
+    { key: 'sn', label: 'SN', sortable: true },
+    {
+      key: 'showDetail',
+      label: 'Show Detail',
+       sortable: true ,
+      render: () => (
+        <button className="text-blue-500 hover:underline">View</button>
+      ),
+    },
+    { key: 'uid', label: 'UID', sortable: true },
+    {
+      key: 'viewBets',
+      label: 'View Bets',
+      render: () => (
+        <button className="text-blue-500 hover:underline">Bets</button>
+      ),
+    },
+    { key: 'stake', label: 'Stake', sortable: true },
+    { key: 'playerPL', label: 'Player P/L' ,  sortable: true},
+    { key: 'uplinePL', label: 'Upline P/L' ,  sortable: true},
+    { key: 'moComm', label: 'MO Comm.',  sortable: true },
+    { key: 'bmComm', label: 'BM Comm.',  sortable: true },
+  ];
+
   return (
-    <div className="flex flex-col gap-4 py-4 min-h-screen bg-[#efece3] font-sans relative">
-      {/* Badge Section */}
-      <div className="px-4">
-        <div className="flex items-center gap-2 w-fit px-3 py-1.5 bg-[#ced4da] border border-[#adb5bd] rounded shadow-sm">
-          <span className="bg-orange-600 text-white text-[11px] px-1.5 py-0.5 rounded font-black uppercase">MA</span>
-          <span className="text-[#212529] text-sm font-bold">vik11000</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#eeede7] p-4 sm:p-6 font-sans text-gray-800">
+      <div className="max-w-[1600px] mx-auto space-y-4">
 
-      {/* Search/Filter Bar */}
-      <div className="px-4 md:px-6 py-6 bg-[#e9ecef] border-y border-[#ced4da] shadow-sm">
-        <div className="flex flex-wrap items-end gap-4 text-sm text-[#495057]">
-          <div className="flex flex-col gap-1 w-full sm:w-60">
-            <label className="font-medium">Game Type</label>
-            <div className="relative">
-              <select className="w-full h-10 px-3 bg-white border border-[#ced4da] rounded focus:outline-none appearance-none">
-                <option>Sports</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              </div>
-            </div>
+        {/* Filter Component */}
+        <DownlineReportFilter />
+
+        {/* Results Section */}
+        <div className="bg-white border border-gray-300 rounded-sm shadow-sm overflow-hidden">
+          
+          {/* Header */}
+          <div className="bg-[#2c3e50] px-4 py-2 text-white font-bold flex items-center justify-between h-10">
+            <span>Profit Loss</span>
           </div>
 
-          <div className="flex flex-col gap-1 w-full sm:w-80">
-            <label className="font-medium">Date</label>
-            <div className="flex">
-              <input 
-                type="text" 
-                defaultValue="01/05/2026 00:00 - 01/05/2026 23:59"
-                className="w-full h-10 px-3 bg-white border border-[#ced4da] border-r-0 rounded-l focus:outline-none text-xs sm:text-sm"
-              />
-              <div className="flex items-center justify-center h-10 px-3 bg-[#ced4da] border border-[#ced4da] rounded-r cursor-pointer shrink-0">
-                <Calendar className="w-4 h-4 text-[#495057]" />
-              </div>
-            </div>
-          </div>
+          <div className="p-4 space-y-4">
 
-          <button className="h-10 px-8 w-full sm:w-auto bg-gradient-to-b from-[#f7c200] to-[#e0b000] border border-[#cca100] rounded text-black font-bold text-sm hover:brightness-105 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.3)]">
-            Get P&L
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex flex-col border-y sm:border sm:mx-4 border-[#1d2939] sm:rounded overflow-hidden">
-        <div className="bg-[#1d2939] px-4 py-2.5 text-white font-bold text-base">
-          Profit Loss
-        </div>
-        
-        <div className="bg-white">
-          <div className="p-4 flex justify-end">
-            <div className="relative w-full sm:w-64">
-              <input 
-                type="text" 
-                placeholder="Search" 
-                className="w-full h-9 px-3 border border-[#ced4da] rounded focus:outline-none focus:border-[#f7c200] text-sm" 
+            {/* Search */}
+            <div className="flex justify-end">
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full max-w-xs h-9 px-3 bg-white border border-gray-300 rounded-sm focus:outline-none focus:border-yellow-500"
               />
             </div>
-          </div>
 
-          <div className="overflow-x-auto border-t border-[#dee2e6]">
-            <table className="w-full text-left border-collapse min-w-[1000px]">
-              <thead className="bg-[#dfe2e6] text-[#212529] font-bold text-sm">
-                <tr>
-                  {[
-                    "SN", "Show Detail", "UID", "View Bets", "Stake", 
-                    "Player P&L", "Upline P&L", "MO Comm.", "BM Comm."
-                  ].map((col, idx) => (
-                    <th key={idx} className="p-3 border border-[#dee2e6] whitespace-nowrap">
-                      <div className="flex items-center justify-between gap-2">
-                        {col}
-                        <ChevronsUpDown className="w-3 h-3 text-blue-500" />
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan={9} className="p-12 text-center text-gray-500 font-medium bg-white">
-                    No data to display
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            {/* Table */}
+            <ReportGenericTable
+              data={data}
+              columns={columns}
+              emptyMessage="No data to display"
+            />
           </div>
         </div>
       </div>
 
-      <button className="fixed bottom-4 right-4 w-12 h-12 bg-[#f7c200] text-black shadow-lg rounded-lg flex items-center justify-center hover:bg-[#e0b000] active:scale-95 transition-all outline-none z-50">
-        <div className="grid grid-cols-3 gap-0.5">
-          {[...Array(9)].map((_, i) => (
-            <div key={i} className="w-1.5 h-1.5 bg-black rounded-[0.5px]" />
-          ))}
-        </div>
-      </button>
+      {/* Floating Button */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 w-12 h-12 bg-[#ffc107] text-black rounded-lg shadow-lg flex items-center justify-center border-2 border-white/20"
+      >
+        <LayoutGrid className="w-6 h-6" />
+      </motion.button>
     </div>
   );
 }
